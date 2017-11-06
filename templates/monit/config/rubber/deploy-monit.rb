@@ -1,10 +1,10 @@
 
 namespace :rubber do
-  
+
   namespace :monit do
-  
+
     rubber.allow_optional_tasks(self)
-    
+
     # monit needs to get stopped first and started last so that it doesn't
     # mess with us restarting everything as part of a deploy.
     before "rubber:pre_stop", "rubber:monit:stop"
@@ -14,14 +14,16 @@ namespace :rubber do
 
     desc "Start monit daemon monitoring"
     task :start, :roles => :monit do
-      rsudo "#{service_status('monit')} || #{service_start('monit')}"
+      # Don't know why I had to do this... Dan
+      # rsudo "service monit status || service monit start"
+      rsudo "service monit start"
     end
-    
+
     desc "Stop monit daemon monitoring"
     task :stop, :roles => :monit do
-      rsudo "#{service_stop('monit')} || true"
+      rsudo "service monit stop || true"
     end
-    
+
     desc "Restart monit daemon monitoring"
     task :restart, :roles => :monit do
       stop
@@ -33,10 +35,6 @@ namespace :rubber do
       rsudo "service monit status || true"
       rsudo "ps -eopid,user,fname | grep [m]onit || true"
       rsudo "netstat -tulpn | grep monit || true"
-    end
-
-    def use_systemd?
-      rubber_instance.os_version.split('.').first.to_i >= 16
     end
 
   end

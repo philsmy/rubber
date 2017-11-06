@@ -22,12 +22,14 @@ namespace :rubber do
 
     desc "Start collectd system monitoring"
     task :start, :roles => :collectd do
-      rsudo "#{service_status('collectd')} || #{service_start('collectd')}"
+      # Don't know why I had to do this... Dan
+      # rsudo "service collectd status || service collectd start"
+      rsudo "service collectd start"
     end
     
     desc "Stop collectd system monitoring"
     task :stop, :roles => :collectd do
-      rsudo "#{service_stop('collectd')} || true"
+      rsudo "service collectd stop || true"
     end
     
     desc "Restart collectd system monitoring"
