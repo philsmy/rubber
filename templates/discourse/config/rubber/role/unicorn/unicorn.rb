@@ -76,14 +76,14 @@ after_fork do |server, worker|
     user, group = '<%=rubber_env.app_user %>', '<%=rubber_env.app_user %>'
     target_uid = Etc.getpwnam(user).uid
     target_gid = Etc.getgrnam(group).gid
-    worker.tmp.chown(target_uid, target_gid)
+    # worker.tmp.chown(target_uid, target_gid)
     if uid != target_uid || gid != target_gid
       Process.initgroups(user, target_gid)
       Process::GID.change_privilege(target_gid)
       Process::UID.change_privilege(target_uid)
     end
   rescue => e
-    if RAILS_ENV == 'development'
+    if Rails.env.development?
       STDERR.puts "couldn't change user, oh well"
     else
       raise e
